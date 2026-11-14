@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control Game Lab</title>
+<style>
+:root{--ink:#1F2A33;--bg:#FAF8F4;--card:#fff;--muted:#66757F;--line:#D3DADF;--soft:#EEF1F3;--grid:#E6EAED;
+--u:#C2513A;--ut:#FBE6E0;--t:#1C8278;--tt:#DBF1EE;--h:#B97C0C;--ht:#FCEFD3;--b:#2D63AD;--bt:#E1EBF8;--g:#3A8A4E;--gt:#E0F1E3;--p:#7550B0;--pt:#EDE5F8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Calibri,sans-serif}
+.wrap{max-width:1240px;margin:0 auto;padding:26px 20px 60px}
+.kicker{font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--t);text-transform:uppercase}
+h1{font-size:32px;margin:4px 0 4px}
+.lead{color:var(--muted);margin:0 0 18px;max-width:900px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tab{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:8px 18px;font-weight:700;cursor:pointer;color:var(--ink);font-size:15px}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pane{display:none}.pane.on{display:block}
+.layout{display:grid;grid-template-columns:330px 1fr;gap:18px;align-items:start}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.panel h3{margin:0 0 10px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ctl{margin-bottom:14px}
+.ctl label{display:flex;justify-content:space-between;font-weight:600;font-size:15px}
+.ctl label span{font-family:"Roboto Mono",ui-monospace,Menlo,monospace;color:var(--b)}
+.ctl small{display:block;color:var(--muted);font-size:13px;line-height:1.35}
+input[type=range]{width:100%;accent-color:var(--b)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:14px}
+.stat{border-radius:12px;padding:10px 14px;background:var(--soft)}
+.stat .v{font-size:26px;font-weight:800}
+.stat .k{font-size:13px;color:var(--muted)}
+.stat.u{background:var(--ut)}.stat.u .v{color:var(--u)}
+.stat.g{background:var(--gt)}.stat.g .v{color:var(--g)}
+.stat.b{background:var(--bt)}.stat.b .v{color:var(--b)}
+.stat.h{background:var(--ht)}.stat.h .v{color:var(--h)}
+svg{width:100%;height:auto;display:block}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",Calibri,sans-serif;fill:var(--muted);font-size:12px}
+.note{color:var(--muted);font-size:14px;margin-top:10px}
+.btn{background:var(--b);color:#fff;border:0;border-radius:9px;padding:10px 16px;font-weight:700;cursor:pointer;font-size:15px;width:100%;margin-top:6px}
+.btn.red{background:var(--u)}
+.btn:disabled{opacity:.6;cursor:wait}
+table{width:100%;border-collapse:collapse;margin-top:8px}
+th{text-align:left;font-size:13px;color:var(--muted);font-weight:700;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:7px 8px;border-bottom:1px solid var(--soft);vertical-align:middle}
+td.name{font-weight:700;white-space:nowrap}
+.bar{height:16px;border-radius:4px;display:inline-block;vertical-align:middle}
+.cell{display:flex;align-items:center;gap:8px;font-family:"Roboto Mono",ui-monospace,monospace;font-size:14px}
+.formula{font-family:"Roboto Mono",ui-monospace,monospace;background:var(--bt);border-radius:10px;padding:10px 14px;font-size:14px;margin-top:12px;color:var(--b)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;margin-top:6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">TARA · Week 10 · AI Control</div>
+  <h1>Monitor &amp; threshold lab</h1>
+  <p class="lead">T gives every solution a suspicion score. H audits everything above the line. Drag the two dials: how well T separates clean from backdoored code, and how big H's audit budget is. Watch what the line catches.</p>
+  <!-- ===== Tab 2 ===== -->
+  <section class="pane on" id="p2">
+    <div class="layout">
+      <div class="panel">
+        <h3>Trusted monitor</h3>
+        <div class="ctl"><label>How well T separates <span id="dV"></span></label><input id="d2" type="range" min="0" max="4" step="0.05" value="1.65"><small>Distance between the clean and backdoored score distributions, in standard deviations. 0 = T can't tell them apart.</small></div>
+        <div class="ctl"><label>Audit budget <span id="bV"></span></label><input id="b2" type="range" min="0.5" max="20" step="0.5" value="2"><small>Sets the threshold: this share of <b>clean</b> code gets flagged.</small></div>
+        <p class="note">The default separation gives about 34% caught at 2%, roughly what the paper's GPT-3.5 monitor managed.</p>
+      </div>
+      <div class="panel">
+        <svg id="c2" viewBox="0 0 760 300"></svg>
+        <div class="legend"><span><i style="background:var(--g)"></i>clean code</span><span><i style="background:var(--u)"></i>backdoored code</span><span><i style="background:var(--h)"></i>threshold</span></div>
+        <div class="stats">
+          <div class="stat h"><div class="v" id="s2a"></div><div class="k">false positive rate (budget spent on clean code)</div></div>
+          <div class="stat u"><div class="v" id="s2b"></div><div class="k">true positive rate (backdoors audited)</div></div>
+          <div class="stat"><div class="v" id="s2c"></div><div class="k">of 100 attacks, this many slip past</div></div>
+        </div>
+        <svg id="roc" viewBox="0 0 760 230" style="margin-top:14px"></svg>
+      </div>
+    </div>
+  </section>
+
+  
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const pct = (x, d = 1) => (100 * x).toFixed(d) + "%";
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function erf(x) { const s = Math.sign(x); x = Math.abs(x); const t = 1 / (1 + 0.3275911 * x); const y = 1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return s * y; }
+const Phi = (z) => 0.5 * (1 + erf(z / Math.SQRT2));
+function invPhi(p) { let lo = -8, hi = 8; for (let i = 0; i < 80; i++) { const m = (lo + hi) / 2; if (Phi(m) < p) lo = m; else hi = m; } return (lo + hi) / 2; }
+const pdf = (z) => Math.exp(-z * z / 2) / Math.sqrt(2 * Math.PI);
+// ---------- Tab 2 ----------
+function draw2() {
+  const d = +$("d2").value, b = +$("b2").value / 100, th = invPhi(1 - b);
+  $("dV").textContent = d.toFixed(2); $("bV").textContent = (b * 100).toFixed(1) + "%";
+  const tpr = 1 - Phi(th - d);
+  $("s2a").textContent = pct(b); $("s2b").textContent = pct(tpr); $("s2c").textContent = Math.round(100 * (1 - tpr));
+  const W = 760, H = 300, L = 30, R = 20, T = 14, B = 34, x0 = -4, x1 = 7.5, X = (z) => L + (z - x0) / (x1 - x0) * (W - L - R), Y = (v) => H - B - v / 0.42 * (H - T - B);
+  const curve = (m, from, to) => { let s = ""; for (let z = from; z <= to + 1e-9; z += 0.05) s += (s ? "L" : "M") + X(z).toFixed(1) + "," + Y(pdf(z - m)).toFixed(1); return s; };
+  const area = (m, from, to) => `M${X(from)},${Y(0)}` + curve(m, from, to).replace(/^M/, "L") + `L${X(to)},${Y(0)}Z`;
+  let g = `<line x1="${L}" x2="${W - R}" y1="${Y(0)}" y2="${Y(0)}" stroke="${css("--ink")}"/>`;
+  g += `<path d="${area(0, Math.max(th, x0), x1)}" fill="${css("--h")}" opacity=".45"/>`;
+  g += `<path d="${area(d, Math.max(th, x0), x1)}" fill="${css("--u")}" opacity=".35"/>`;
+  g += `<path d="${curve(0, x0, x1)}" fill="none" stroke="${css("--g")}" stroke-width="3"/><path d="${curve(d, x0, x1)}" fill="none" stroke="${css("--u")}" stroke-width="3"/>`;
+  g += `<line x1="${X(th)}" x2="${X(th)}" y1="${T}" y2="${Y(0)}" stroke="${css("--h")}" stroke-width="3" stroke-dasharray="6 4"/><text x="${X(th) + 6}" y="${T + 12}" style="fill:${css("--h")};font-weight:700">audit everything right of here</text>`;
+  g += `<text x="${L}" y="${H - 8}">less suspicious</text><text x="${W - R}" y="${H - 8}" text-anchor="end">more suspicious →</text>`;
+  $("c2").innerHTML = g;
+  // ROC
+  const RW = 760, RH = 230, rl = 300, rs = 200, rt = 14, RX = (f) => rl + f * rs, RY = (t) => rt + (1 - t) * rs;
+  let r = `<rect x="${rl}" y="${rt}" width="${rs}" height="${rs}" fill="none" stroke="${css("--line")}"/><line x1="${RX(0)}" y1="${RY(0)}" x2="${RX(1)}" y2="${RY(1)}" stroke="${css("--grid")}" stroke-dasharray="4 4"/>`;
+  let pth = ""; for (let i = 0; i <= 200; i++) { const f = i / 200, t = 1 - Phi(invPhi(1 - Math.max(1e-6, Math.min(1 - 1e-6, f))) - d); pth += (pth ? "L" : "M") + RX(f).toFixed(1) + "," + RY(t).toFixed(1); }
+  r += `<path d="${pth}" fill="none" stroke="${css("--b")}" stroke-width="2.5"/><circle cx="${RX(b)}" cy="${RY(tpr)}" r="6" fill="${css("--u")}"/>`;
+  r += `<text x="${rl - 10}" y="${rt + rs / 2}" text-anchor="end">true positive rate ↑</text><text x="${rl + rs / 2}" y="${RH}" text-anchor="middle">false positive rate →</text><text x="${rl + rs + 14}" y="${RY(tpr) + 4}" style="fill:${css("--u")};font-weight:700">you are here: each budget is one point on this curve</text>`;
+  $("roc").innerHTML = r;
+}
+["d2", "b2"].forEach((i) => $(i).oninput = draw2);
+
+
+draw2();
+
+</script>
+</body>
+</html>

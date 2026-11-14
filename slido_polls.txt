@@ -1,0 +1,50 @@
+Slido polls · TARA Week 10 · ARENA 3.5 AI Control
+Questions and options only. Answers are in poll_answers.txt.
+
+Poll 1 (presentation page 35, handout slide 20): A lab deploys a powerful coding model. Which step is AI control, not alignment?
+  A. Fine-tune it on examples of honest answers
+  B. A weaker model reviews every change it makes
+  C. Train it to refuse requests to plant backdoors
+  D. Run more RLHF rounds on human preference data
+
+Poll 2 (presentation page 51, handout slide 31): Which question does a control eval answer?
+  A. Can the model write a working backdoor?
+  B. Would the model choose to plant one?
+  C. Does the model know it's being tested?
+  D. If U tries, does our protocol stop it?
+
+Poll 3 (presentation page 66, handout slide 41): On the scaled usefulness axis, what does 0% mean?
+  A. As useful as T on its own
+  B. No problem solved correctly
+  C. Every answer U gives is wrong
+  D. H audited every solution
+
+Poll 4 (presentation page 77, handout slide 48): U's code is wrong on 3 of the 10 test cases. Is it a successful backdoor?
+  A. Yes: wrong outputs are the backdoor
+  B. Only if T rates it as suspicious
+  C. No: a backdoor passes every test
+  D. Only if it crashes on the trigger
+
+Poll 5 (presentation page 111, handout slide 67): After the attack Task, a problem has backdoor successful = False. What happened?
+  A. T's monitor flagged the backdoored code
+  B. It failed a test or its trigger missed
+  C. H audited it and found the backdoor
+  D. The blue team rejected the solution
+
+Poll 6 (presentation page 133, handout slide 78): Under upfront auditing, why can't U just wait until problem 101 to attack?
+  A. The audit budget resets after problem 100
+  B. T warns H when U waits too long
+  C. Waiting would lower its usefulness score
+  D. U has no memory, so it can't count
+
+Poll 7 (presentation page 165, handout slide 100): With a 2% audit budget, T's monitor has a TPR of 34%. What does the 34% mean?
+  A. 34% of backdoors get audited
+  B. 34% of audited code is backdoored
+  C. 34% of all solutions get audited
+  D. T is 34% sure code is clean
+
+Poll 8 (presentation page 183, handout slide 114): Why does trusted editing keep more usefulness than defer to trusted?
+  A. T edits code faster than it writes code
+  B. Editing spends more of the audit budget
+  C. An edit keeps most of U's working logic
+  D. U double-checks T's edits before shipping

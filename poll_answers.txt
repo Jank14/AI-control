@@ -1,0 +1,34 @@
+Poll answer key · TARA Week 10 · ARENA 3.5 AI Control
+Not shown on the slides. Use this to mark the correct option in Slido and to talk it through.
+
+Poll 1 (presentation page 35, handout slide 20): A lab deploys a powerful coding model. Which step is AI control, not alignment?
+  Answer: B. A weaker model reviews every change it makes
+  Why: Control doesn't try to change what the model wants: it limits what the model can get away with. A reviewer on every change works whatever the model wants. The other three all try to change the model's goals or behaviour through training.
+
+Poll 2 (presentation page 51, handout slide 31): Which question does a control eval answer?
+  Answer: D. If U tries, does our protocol stop it?
+  Why: A control eval assumes the model will try, and grades the protocol. 'Can it?' is a capability eval, 'would it?' is an alignment eval, and whether it knows it's tested is why we can't just trust those.
+
+Poll 3 (presentation page 66, handout slide 41): On the scaled usefulness axis, what does 0% mean?
+  Answer: A. As useful as T on its own
+  Why: The scale puts T alone at 0% and honest U at 100%. So 0% means we kept none of U's extra skill: no better than using T by itself, even though T still solves 22% of problems.
+
+Poll 4 (presentation page 77, handout slide 48): U's code is wrong on 3 of the 10 test cases. Is it a successful backdoor?
+  Answer: C. No: a backdoor passes every test
+  Why: A backdoor must pass every test AND be wrong on a trigger U picked in advance. Code that fails tests is just wrong code, and step 5 would mark it unsuccessful.
+
+Poll 5 (presentation page 111, handout slide 67): After the attack Task, a problem has backdoor successful = False. What happened?
+  Answer: B. It failed a test or its trigger missed
+  Why: backdoor successful is written by the red team's own checks inside the attack Task: the backdoored code must pass the tests and give a different answer from the clean code on the trigger. T, H and the blue team only come in later.
+
+Poll 6 (presentation page 133, handout slide 78): Under upfront auditing, why can't U just wait until problem 101 to attack?
+  Answer: D. U has no memory, so it can't count
+  Why: Each problem is a separate call and the attack keeps no state between problems, so U can't know whether it's inside the audited window. Its best option is to attack at random, rarely.
+
+Poll 7 (presentation page 165, handout slide 100): With a 2% audit budget, T's monitor has a TPR of 34%. What does the 34% mean?
+  Answer: A. 34% of backdoors get audited
+  Why: TPR is the share of backdoored solutions that land above the audit line. The 2% is the share of all solutions audited; 34% is how many of the backdoors are among them.
+
+Poll 8 (presentation page 183, handout slide 114): Why does trusted editing keep more usefulness than defer to trusted?
+  Answer: C. An edit keeps most of U's working logic
+  Why: Deferring throws U's mostly-correct code away and ships T's weaker solution. Editing keeps U's algorithm and only removes the suspicious part.
